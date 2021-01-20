@@ -1,19 +1,24 @@
 package wvDefault;
 
 import wvAPI.*;
+import wvUtilità.Mapper;
 
+import org.json.simple.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 public class Controller {
 	
-	@GetMapping("/Call/{citta}")
-	public Map<String, Object> chiamata() {
-		APIOpenWeather API1 = new APIOpenWeather("termoli"); 
-		return API1.callCurrent();
+	Mapper map = new Mapper();
+	
+	@GetMapping("/Call")
+	public JSONObject chiamata() {
+		APIOpenWeather API = new APIOpenWeather("termoli");
+		return API.callCurrent();
+		
 	}
 
 }

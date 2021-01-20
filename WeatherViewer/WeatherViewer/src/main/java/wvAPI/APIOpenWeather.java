@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
 import org.springframework.stereotype.Component;
 
@@ -16,13 +19,13 @@ public class APIOpenWeather {
 	
 static String APIkey = "eaab0d56e8e9ef6b813a372c16f220e6";
 	
-	public Map<String, Object> objCurrent;
-	public Map<String, Object> objForecast;
-	public Map<String, Object> objHistory;
-	
+	public JSONObject objCurrent;
+	public JSONObject objForecast;
+	public JSONObject objHistory;
+
 	public String città;
-	public String lat;
-	public String lon;
+	public Double lat;
+	public Double lon;
 	
 	Mapper map = new Mapper();
 	
@@ -30,15 +33,14 @@ static String APIkey = "eaab0d56e8e9ef6b813a372c16f220e6";
 		this.città = città;	
 		callCurrent();
 		setCoord();
-		getInfo();
 	}
 	
 	private void setCoord() {
 		
-	    Map<String, Object> mapCoord = map.jsonToMap(objCurrent.get("coord").toString());
+		JSONObject coord = map.objParser(objCurrent, "coord");
 		
-		this.lat =  mapCoord.get("lat").toString();
-		this.lon =  mapCoord.get("lon").toString();
+		this.lat =  (Double)coord.get("lat");
+		this.lon =  (Double)coord.get("lon");
 		
 	}
 	public void getInfo() {
@@ -49,7 +51,7 @@ static String APIkey = "eaab0d56e8e9ef6b813a372c16f220e6";
 			
 	}
 	
-	public Map<String, Object> callCurrent() {
+	public JSONObject callCurrent() {
 		try {
 			String urlString ="http://api.openweathermap.org/data/2.5/weather?q=" + this.città + "&appid=" + APIkey + "&units=metric";
 			URL url = new URL(urlString);
@@ -63,13 +65,18 @@ static String APIkey = "eaab0d56e8e9ef6b813a372c16f220e6";
 			}
 			lettore.close();
 			
-			objCurrent = map.jsonToMap(data.toString());
+			objCurrent = (JSONObject)JSONValue.parseWithException(data);
 				
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}	
 		
+		//objCurrent = (JSONObject)objCurrent.get("coord");
+		//return (Double)objCurrent.get("lat");
 		return objCurrent;
+		
 		}
 	
 	
